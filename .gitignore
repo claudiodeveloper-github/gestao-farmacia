@@ -47,3 +47,5 @@ src/main/resources/db.properties
 
 ### Mac OS ###
 .DS_Store
+
+relatorio_*.txt
