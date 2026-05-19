@@ -23,13 +23,13 @@
 
 ## 📋 Sobre o Projeto
 
-O **Gestão Farmácia** é uma aplicação console desenvolvida em Java puro com conexão a banco de dados MySQL. O projeto aplica boas práticas de arquitetura em camadas (DAO, Service, Model), separação de responsabilidades e tratamento de exceções — consolidando fundamentos essenciais do desenvolvimento backend.
+O **Gestão Farmácia** é uma aplicação console desenvolvida em Java puro com conexão a banco de dados MySQL. O projeto aplica boas práticas de arquitetura em camadas (DAO, Service, Model), separação de responsabilidades e tratamento de exceções, consolidando fundamentos essenciais do desenvolvimento backend.
 
 > Projeto desenvolvido para praticar Java com banco de dados relacional, arquitetura em camadas e boas práticas de código.
 
 ---
 
-## ✨ Funcionalidades
+##  Funcionalidades
 
 | # | Funcionalidade | Descrição |
 |---|---|---|
@@ -44,7 +44,7 @@ O **Gestão Farmácia** é uma aplicação console desenvolvida em Java puro com
 
 ---
 
-## 🗂️ Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 gestao-farmacia/
@@ -71,7 +71,7 @@ gestao-farmacia/
 
 ---
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
 Main (View/CLI)
@@ -100,7 +100,7 @@ A aplicação segue o padrão **DAO (Data Access Object)** com separação clara
 
 ---
 
-## ⚙️ Como Executar
+## Como Executar
 
 ### Pré-requisitos
 
@@ -142,7 +142,7 @@ db.user=seu_usuario
 db.password=sua_senha
 ```
 
-> ⚠️ Este arquivo está no `.gitignore` e **não deve ser versionado**.
+>  Este arquivo está no `.gitignore` e **não deve ser versionado**.
 
 ### 4. Execute o projeto
 
@@ -154,7 +154,7 @@ mvn compile exec:java -Dexec.mainClass="com.farmacia.Main"
 
 ---
 
-## 💻 Demonstração
+## Demonstração
 
 ```
 ========= SISTEMA DE FARMÁCIA =========
@@ -179,7 +179,7 @@ Total: 4 medicamento(s).
 
 ---
 
-## 📄 Exportação de Relatório
+## Exportação de Relatório
 
 Ao escolher a opção **8**, o sistema gera um arquivo `.txt` na raiz do projeto com nome no formato `relatorio_AAAAMMDD_HHMMSS.txt`:
 
@@ -198,7 +198,7 @@ ID:   1 | Amoxicilina          | Lab: Medley      | R$   25,90 | Val: 30/12/2026
 
 ---
 
-## 📚 Conceitos Aplicados
+## Conceitos Aplicados
 
 - ✅ Arquitetura em camadas (Model / DAO / Service / View)
 - ✅ JDBC com `PreparedStatement` (prevenção de SQL Injection)
@@ -210,7 +210,7 @@ ID:   1 | Amoxicilina          | Lab: Medley      | R$   25,90 | Val: 30/12/2026
 
 ---
 
-## 🤝 Autor
+## Autor
 
 <table>
   <tr>
@@ -224,7 +224,7 @@ ID:   1 | Amoxicilina          | Lab: Medley      | R$   25,90 | Val: 30/12/2026
 
 ---
 
-## 📝 Licença
+## Licença
 
 Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
