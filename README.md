@@ -233,3 +233,5 @@ Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) par
 <p align="center">
   Feito com ☕ e Java por <a href="https://github.com/claudiodeveloper-github">Cláudio G. S. Castro</a>
 </p>
+
+---
