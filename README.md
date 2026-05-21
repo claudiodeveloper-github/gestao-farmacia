@@ -210,6 +210,73 @@ ID:   1 | Amoxicilina          | Lab: Medley      | R$   25,90 | Val: 30/12/2026
 
 ---
 
+## 💬 Conversa Técnica (FAQ do Projeto)
+
+Para ajudar a entender o propósito do projeto e as minhas decisões de design, imagine um bate-papo sincero entre um **Recrutador/Avaliador Técnico (💬)** e o **Desenvolvedor (💻)**:
+
+---
+
+### 💬 1. O que é este projeto e qual problema ele resolve?
+💻 O **Gestão Farmácia** é um sistema para o gerenciamento de estoque de medicamentos operado via linha de comando (CLI). Ele permite cadastrar itens, listar com ordenação personalizada, buscar por nome, alertar sobre estoque baixo, verificar produtos vencidos e exportar um relatório consolidado em formato `.txt`. 
+
+O grande objetivo aqui não foi criar uma interface visual complexa, mas sim consolidar na prática os fundamentos de **programação orientada a objetos (POO)**, boas práticas de **arquitetura em camadas** e a persistência de dados em um banco real.
+
+---
+
+### 💬 2. Como você organizou a estrutura do projeto e por quê?
+💻 O projeto segue o padrão de arquitetura em camadas para garantir a **separação de responsabilidades**. A estrutura ficou dividida assim:
+
+* **`Main.java`**: Atua como a nossa **View (Apresentação)**. É o ponto de entrada que interage diretamente com o usuário no console e renderiza o menu.
+* **`MedicamentoService.java`**: Concentra as **Regras de Negócio e Validações**. É aqui que o sistema valida se os dados estão corretos (como preços e quantidades válidas) antes de permitir o envio para o banco.
+* **`MedicamentoDAO.java`**: Nossa camada de **Persistência**. Nenhuma regra de negócio fica aqui; o DAO foca exclusivamente em executar os comandos SQL e conversar com o banco de dados.
+* **`Medicamento.java`**: Nosso **Model (Entidade)**, que representa a estrutura do medicamento exatamente como ele existe no mundo real e na tabela do banco.
+* **`Relatorio.java` (`util/`)**: Uma classe utilitária focada isoladamente na lógica de escrita, organização e formatação do arquivo de exportação.
+
+Fazer dessa forma impede o famoso "código espaguete". Se amanhã eu decidir trocar a interface de console por uma tela Web ou Mobile, eu mudo apenas a View; toda a lógica de negócios e as consultas ao banco continuam intactas e reaproveitáveis.
+
+---
+
+### 💬 3. O que significa o padrão DAO que você usou e qual a sua importância?
+💻 **DAO** significa *Data Access Object* (Objeto de Acesso a Dados). É um padrão de projeto que serve para isolar completamente a lógica de acesso ao banco de dados do restante da aplicação. 
+
+No código, o `MedicamentoDAO` encapsula todas as queries SQL (`SELECT`, `INSERT`, `UPDATE`, `DELETE`). As outras camadas do sistema não sabem (e não precisam saber) se estou salvando os dados em um arquivo de texto, em um banco MySQL ou em um banco PostgreSQL; elas apenas chamam os métodos do DAO e recebem os objetos Java prontos. Isso gera um forte **desacoplamento**, facilitando muito a manutenção.
+
+---
+
+### 💬 4. Por que você escolheu o MySQL e como foi feita a integração?
+💻 Escolhi o **MySQL 8.0** por ser um banco de dados relacional robusto, amplamente utilizado no mercado e ideal para exercitar a modelagem de tabelas com chaves primárias e tipos de dados específicos (como `DECIMAL` para preços e `DATE` para validades).
+
+A integração foi feita de forma nativa usando **JDBC (Java Database Connectivity)** com o driver oficial do MySQL. Para evitar expor dados sensíveis no código (como o usuário e a senha locais do banco), utilizei um arquivo isolado chamado `db.properties` dentro de `src/main/resources/`. Esse arquivo foi adicionado ao `.gitignore`, garantindo que credenciais de acesso nunca sejam enviadas para o GitHub público.
+
+---
+
+### 💬 5. Notei que você usou PreparedStatement. Por que não concatenou as strings diretamente no SQL?
+💻 Usar concatenação direta (como ` "WHERE nome = '" + nome + "'" `) abre uma vulnerabilidade gravíssima de segurança chamada **SQL Injection**, onde um usuário mal-intencionado poderia digitar comandos SQL maliciosos no console para burlar o sistema, apagar ou roubar dados do banco.
+
+O **`PreparedStatement`** pré-compila a query SQL com marcadores de posição (`?`). Quando passamos os parâmetros, o driver JDBC trata esses dados estritamente como valores textuais ou numéricos, neutralizando qualquer tentativa de injeção de código. Além da segurança, ele também traz um ganho de performance em consultas repetitivas.
+
+---
+
+### 💬 6. Como funciona a exportação de relatórios no projeto?
+💻 Quando o usuário escolhe a opção de exportar no menu, a interface aciona a classe utilitária `Relatorio.java`. Essa classe busca a lista atualizada de medicamentos do banco de dados passando pela Service e pelo DAO. 
+
+Utilizando as classes nativas do Java para manipulação de arquivos (`BufferedWriter` e `FileWriter`), o sistema gera um arquivo `.txt` na raiz do projeto. O nome do arquivo é gerado dinamicamente incluindo a data e a hora exatas do momento da exportação (no formato `relatorio_AAAAMMDD_HHMMSS.txt`), garantindo que um relatório novo nunca sobrescreva o anterior e mantendo um histórico limpo para o usuário.
+
+---
+
+### 💬 7. O que você aplicou de gerenciamento de recursos e tratamento de erros?
+💻 No acesso ao banco de dados, apliquei o recurso do **`try-with-resources`** do Java. Conexões com bancos de dados são recursos caros e finitos do sistema; se deixadas abertas, podem travar a aplicação ou estourar o limite do servidor. O `try-with-resources` garante que objetos como `Connection`, `PreparedStatement` e `ResultSet` sejam fechados automaticamente assim que o bloco termina, ocorrendo um erro ou não.
+
+Também implementei um fluxo de **tratamento de exceções** para capturar falhas de banco de dados (erros de SQL) ou erros de validação de forma elegante. Isso impede que o programa quebre bruscamente mostrando aquela tela cheia de linhas vermelhas (*stack trace*) para o usuário, exibindo em vez disso uma mensagem amigável e clara no console.
+
+---
+
+### 💬 8. Como você garantiu que o sistema não tentasse alterar ou deletar um registro que não existe?
+💻 Em métodos de alteração e deleção (`UPDATE` e `DELETE`), o método `stmt.executeUpdate()` do JDBC retorna um número inteiro que representa exatamente quantas linhas foram afetadas no banco de dados. 
+
+No `MedicamentoDAO`, eu capturo esse retorno. Se o valor retornado for `0`, significa que o ID passado pelo usuário não existia na tabela. Sabendo disso, o sistema lança imediatamente uma exceção detalhada, impedindo que a operação termine silenciosamente e garantindo que o usuário seja alertado de que nada foi alterado.
+
+
 ## Autor
 
 <table>
@@ -235,4 +302,5 @@ Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) par
 </p>
 
 ---
+
 ***
